@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Local Gamers Odisha - BETA</title>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            padding: 1.5rem 0;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo-section h1 {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .logo-section p {
+            color: #dbeafe;
+            font-size: 1rem;
+        }
+
+        .badges {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .beta-badge {
+            background: #dc2626;
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .odisha-badge {
+            background: #f59e0b;
+            color: #000;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 4rem 0;
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #3b82f6, #1e40af);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            color: #cbd5e1;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #3b82f6, #1e40af);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #3b82f6;
+            color: #3b82f6;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 4rem 0;
+        }
+
+        .feature-card {
+            background: #1e293b;
+            padding: 2.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid #334155;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b82f6;
+        }
+
+        .feature-card h3 {
+            color: #3b82f6;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+
+        .team-code-section {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            padding: 3rem;
+            border-radius: 12px;
+            margin: 4rem 0;
+            text-align: center;
+        }
+
+        .team-code-section h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .code-input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .code-input {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            width: 200px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .steps-section {
+            margin: 4rem 0;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .step-card {
+            background: #1e293b;
+            padding: 2.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .step-number {
+            background: #3b82f6;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-card h3 {
+            color: #3b82f6;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .step-card p {
+            color: #94a3b8;
+            line-height: 1.7;
+        }
+
+        .footer {
+            background: #1e293b;
+            padding: 3rem 0;
+            text-align: center;
+            border-top: 1px solid #334155;
+            margin-top: 4rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            margin: 2% auto;
+            padding: 2.5rem;
+            border-radius: 12px;
+            max-width: 600px;
+            position: relative;
+            border: 1px solid #334155;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #3b82f6;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #3b82f6;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            background: #0f172a;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .results-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-card {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid #334155;
+        }
+
+        .result-card h4 {
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-code {
+            background: #3b82f6;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .password-protection {
+            background: #dc2626;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .code-input-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-section">
+                    <h1>Find Local Gamers & Build Your Squad</h1>
+                    <p>Search teammates by District, Block or City. Perfect for BGMI, Free Fire and CODM.</p>
+                </div>
+                <div class="badges">
+                    <div class="beta-badge">BETA</div>
+                    <div class="odisha-badge">ONLY FOR ODISHA</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>FIND LOCAL GAMERS IN ODISHA</h1>
+            <p>Connect with gamers across Odisha. Build your squad and dominate the battlefield!</p>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="openFindOpponent()">FIND YOUR OPPONENT</button>
+                <button class="btn btn-secondary" onclick="openAddTeam()">ADD YOUR TEAM</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>Multi-Device Support</h3>
+                <p>Your team data is available across all devices. User A from Bhubaneswar can connect with User B from Sambalpur.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Auto Data Cleanup</h3>
+                <p>Team data automatically expires after 5 minutes to ensure fresh and active gaming connections.</p>
+            </div>
+            <div class="feature-card">
+                <h3>Secure & Protected</h3>
+                <p>Password protection ensures only authorized users can add teams to the platform.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="container">
+        <div class="team-code-section">
+            <h2>TEAM CODE SYSTEM</h2>
+            <p>Use team codes to connect directly with specific opponents for custom matches</p>
+            <div class="code-input-group">
+                <input type="text" class="code-input" placeholder="Enter Team Code" id="teamCodeInput">
+                <button class="btn btn-primary" onclick="joinWithCode()">JOIN WITH CODE</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="container steps-section">
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <h3>Add Your Team Securely</h3>
+                <p>Create your gaming profile with password protection. Your team will be visible to gamers across Odisha for 5 minutes.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <h3>Find Across Odisha</h3>
+                <p>Search for gamers in any district of Odisha. Connect with players 80-90km away using our cloud-based matching system.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>Find Local Gamers Odisha - BETA Version | Multi-Device Cloud System</p>
+            <p>Data Auto-Expires in 5 Minutes | Password Protected</p>
+        </div>
+    </footer>
+
+    <div id="findOpponentModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFindOpponent()">&times;</span>
+            <h2>FIND YOUR OPPONENT</h2>
+            
+            <div class="form-group">
+                <label>Select District</label>
+                <select id="searchDistrict">
+                    <option value="">Select District</option>
+                    <option value="Angul">Angul</option>
+                    <option value="Balangir">Balangir</option>
+                    <option value="Balasore">Balasore</option>
+                    <option value="Bargarh">Bargarh</option>
+                    <option value="Bhadrak">Bhadrak</option>
+                    <option value="Boudh">Boudh</option>
+                    <option value="Cuttack">Cuttack</option>
+                    <option value="Debagarh">Debagarh</option>
+                    <option value="Dhenkanal">Dhenkanal</option>
+                    <option value="Gajapati">Gajapati</option>
+                    <option value="Ganjam">Ganjam</option>
+                    <option value="Jagatsinghapur">Jagatsinghapur</option>
+                    <option value="Jajpur">Jajpur</option>
+                    <option value="Jharsuguda">Jharsuguda</option>
+                    <option value="Kalahandi">Kalahandi</option>
+                    <option value="Kandhamal">Kandhamal</option>
+                    <option value="Kendrapara">Kendrapara</option>
+                    <option value="Kendujhar">Kendujhar</option>
+                    <option value="Khordha">Khordha</option>
+                    <option value="Koraput">Koraput</option>
+                    <option value="Malkangiri">Malkangiri</option>
+                    <option value="Mayurbhanj">Mayurbhanj</option>
+                    <option value="Nabarangpur">Nabarangpur</option>
+                    <option value="Nayagarh">Nayagarh</option>
+                    <option value="Nuapada">Nuapada</option>
+                    <option value="Puri">Puri</option>
+                    <option value="Rayagada">Rayagada</option>
+                    <option value="Sambalpur">Sambalpur</option>
+                    <option value="Subarnapur">Subarnapur</option>
+                    <option value="Sundargarh">Sundargarh</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Block/City</label>
+                <input type="text" id="searchBlock" placeholder="Enter your block or city">
+            </div>
+
+            <div class="form-group">
+                <label>Preferred Game</label>
+                <select id="searchGame">
+                    <option value="">Select Game</option>
+                    <option value="BGMI">BGMI</option>
+                    <option value="Free Fire">Free Fire</option>
+                    <option value="CODM">CODM</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="searchOpponents()">SEARCH OPPONENTS</button>
+            <button class="btn btn-secondary" style="width: 100%;" onclick="randomMatch()">RANDOM MATCH IN ODISHA</button>
+
+            <div id="searchResults" class="results-section">
+                <h3 style="color: #3b82f6; margin: 2rem 0 1rem 0;">Search Results</h3>
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addTeamModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddTeam()">&times;</span>
+            <h2>ADD YOUR TEAM</h2>
+            
+            <div class="password-protection">
+                🔒 Password Protected - Contact Admin for Access
+            </div>
+            
+            <div class="form-group">
+                <label>Admin Password *</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+            </div>
+
+            <div class="form-group">
+                <label>Team Name *</label>
+                <input type="text" id="teamName" placeholder="Enter your team name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Your Name *</label>
+                <input type="text" id="playerName" placeholder="Enter your name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number *</label>
+                <input type="tel" id="playerPhone" placeholder="Enter your phone number" required>
+            </div>
+
+            <div class="form-group">
+                <label>Select District *</label>
+                <select id="teamDistrict" required>
+                    <option value="">Select District</option>
+                    <option value="Angul">Angul</option>
+                    <option value="Balangir">Balangir</option>
+                    <option value="Balasore">Balasore</option>
+                    <option value="Bargarh">Bargarh</option>
+                    <option value="Bhadrak">Bhadrak</option>
+                    <option value="Boudh">Boudh</option>
+                    <option value="Cuttack">Cuttack</option>
+                    <option value="Debagarh">Debagarh</option>
+                    <option value="Dhenkanal">Dhenkanal</option>
+                    <option value="Gajapati">Gajapati</option>
+                    <option value="Ganjam">Ganjam</option>
+                    <option value="Jagatsinghapur">Jagatsinghapur</option>
+                    <option value="Jajpur">Jajpur</option>
+                    <option value="Jharsuguda">Jharsuguda</option>
+                    <option value="Kalahandi">Kalahandi</option>
+                    <option value="Kandhamal">Kandhamal</option>
+                    <option value="Kendrapara">Kendrapara</option>
+                    <option value="Kendujhar">Kendujhar</option>
+                    <option value="Khordha">Khordha</option>
+                    <option value="Koraput">Koraput</option>
+                    <option value="Malkangiri">Malkangiri</option>
+                    <option value="Mayurbhanj">Mayurbhanj</option>
+                    <option value="Nabarangpur">Nabarangpur</option>
+                    <option value="Nayagarh">Nayagarh</option>
+                    <option value="Nuapada">Nuapada</option>
+                    <option value="Puri">Puri</option>
+                    <option value="Rayagada">Rayagada</option>
+                    <option value="Sambalpur">Sambalpur</option>
+                    <option value="Subarnapur">Subarnapur</option>
+                    <option value="Sundargarh">Sundargarh</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Block/City *</label>
+                <input type="text" id="teamBlock" placeholder="Enter your block or city" required>
+            </div>
+
+            <div class="form-group">
+                <label>Preferred Games *</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="bgmi" value="BGMI">
+                        <label for="bgmi">BGMI</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="freefire" value="Free Fire">
+                        <label for="freefire">Free Fire</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="codm" value="
