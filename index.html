@@ -1,993 +1,376 @@
-
-
-```html
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Odisha Gaming Connect - Find Local Players</title>
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
-    
+    <title>Near2Squad - Odisha</title>
     <style>
-        * {
+        /* --- PRO STYLING & ANIMATIONS --- */
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Arial', sans-serif;
+            text-align: center;
+            overflow-x: hidden;
         }
 
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #e2e8f0;
-            line-height: 1.6;
-            min-height: 100vh;
+        /* Animation: Fade In Effect */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate {
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            color: #ff5e00;
+            text-shadow: 0 0 15px #ff5e00;
+            margin-top: 30px;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
         }
 
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-            padding: 1.5rem 0;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .logo-section h1 {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: white;
-        }
-
-        .logo-section p {
-            color: #fecaca;
-            font-size: 1rem;
-        }
-
-        .badges {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .beta-badge {
-            background: #000;
-            color: white;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        .odisha-badge {
-            background: #f59e0b;
-            color: #000;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.8rem;
-        }
-
-        /* Hero Section */
-        .hero {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            padding: 3rem 0;
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #dc2626, #ea580c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            color: #cbd5e1;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #dc2626, #ea580c);
-            color: white;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            border: 2px solid #dc2626;
-            color: #dc2626;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
-        }
-
-        /* Stats Section */
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .stat-card {
-            background: #1e293b;
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #334155;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #dc2626;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Games Grid */
-        .games-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .game-card {
-            background: #1e293b;
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-            border: 1px solid #334155;
-            transition: transform 0.3s ease;
-        }
-
-        .game-card:hover {
-            transform: translateY(-5px);
-            border-color: #dc2626;
-        }
-
-        .game-card img {
-            width: 50px;
-            height: 50px;
-            margin-bottom: 0.5rem;
-        }
-
-        /* Team Code Section */
-        .team-code-section {
-            background: linear-gradient(135deg, #dc2626 0%, #ea580c 100%);
-            padding: 2rem;
-            border-radius: 12px;
-            margin: 2rem 0;
-            text-align: center;
-        }
-
-        .code-input-group {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .code-input {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            width: 200px;
-            text-align: center;
-            background: rgba(255, 255, 255, 0.9);
-        }
-
-        /* Footer */
-        .footer {
-            background: #1e293b;
-            padding: 2rem 0;
-            text-align: center;
-            border-top: 1px solid #334155;
-            margin-top: 3rem;
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin: 1rem 0;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: #94a3b8;
-            text-decoration: none;
-        }
-
-        .footer-links a:hover {
-            color: #dc2626;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: #1e293b;
-            margin: 2% auto;
-            padding: 2rem;
-            border-radius: 12px;
             max-width: 500px;
-            position: relative;
-            border: 1px solid #334155;
-            max-height: 90vh;
-            overflow-y: auto;
+            margin: 0 auto;
+            padding: 20px;
         }
 
-        .close {
-            position: absolute;
-            right: 15px;
-            top: 10px;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #dc2626;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            color: #dc2626;
-            font-weight: bold;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            background: #0f172a;
+        /* --- BUTTONS --- */
+        .big-btn {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 2px solid #ff5e00;
             color: white;
+            padding: 30px;
+            margin: 15px 0;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(255, 94, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .big-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(255, 94, 0, 0.6);
+            background: #ff5e00;
+            color: black;
+        }
+
+        .action-btn {
+            background-color: #ff5e00;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .back-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #aaa;
+            padding: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+
+        /* --- INPUTS --- */
+        input, select {
+            width: 90%;
+            padding: 14px;
+            margin: 10px 0;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
             font-size: 1rem;
         }
 
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 0.5rem;
-            margin-top: 0.5rem;
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff5e00;
         }
 
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
+        /* --- VIEWS (Screens) --- */
+        .view {
+            display: none; /* Sab chupao initially */
+        }
+        
+        .active-view {
+            display: block; /* Jo active hai wahi dikhega */
         }
 
-        /* Results Section */
-        .results-section {
-            margin-top: 1.5rem;
-            display: none;
-        }
-
-        .result-card {
-            background: #0f172a;
-            padding: 1rem;
+        /* --- RESULTS CARD --- */
+        .room-item {
+            background: #111;
+            border-right: 4px solid #ff5e00;
             border-radius: 8px;
-            margin-bottom: 1rem;
-            border: 1px solid #334155;
+            margin: 10px 0;
+            padding: 15px;
+            text-align: left;
+            animation: fadeIn 0.5s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
         }
 
-        .result-card h4 {
-            color: #dc2626;
-            margin-bottom: 0.5rem;
-        }
-
-        .team-code {
-            background: #dc2626;
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 0.9rem;
-        }
-
-        .time-left {
-            color: #94a3b8;
-            font-size: 0.8rem;
-            margin-top: 0.5rem;
-        }
-
-        .data-limit-warning {
-            background: #dc2626;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            margin: 1rem 0;
+        .game-title { color: #ff5e00; font-weight: bold; font-size: 1.1rem; }
+        .details { color: #ccc; font-size: 0.9rem; margin: 5px 0; }
+        .copy-code {
+            background: #222;
+            color: #fff;
+            padding: 8px;
             text-align: center;
-            font-size: 0.9rem;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            border: 1px dashed #555;
+            margin-top: 5px;
         }
 
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 280px;
-            }
-            
-            .code-input-group {
-                flex-direction: column;
-            }
-            
-            .modal-content {
-                margin: 5% auto;
-                padding: 1.5rem;
-            }
-        }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo-section">
-                    <h1>Odisha Gaming Connect</h1>
-                    <p>Find Local Players & Build Your Squad Instantly</p>
-                </div>
-                <div class="badges">
-                    <div class="beta-badge">LIVE</div>
-                    <div class="odisha-badge">ONLY ODISHA</div>
-                </div>
-            </div>
-        </div>
-    </header>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <h1>CONNECT WITH GAMERS ACROSS ODISHA</h1>
-            <p>Find players in your city, village or district. Play BGMI, Free Fire, CODM and more!</p>
+    <div class="container">
+        <h1>near2squad <span style="font-size:12px; vertical-align:middle; background:#ff5e00; color:black; padding:2px 5px; border-radius:4px;">BETA</span></h1>
+
+        <div id="home-view" class="view active-view animate">
+            <p style="color:#aaa; margin-bottom: 30px;">Select your mode:</p>
             
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="openFindPlayer()">FIND PLAYERS</button>
-                <button class="btn btn-secondary" onclick="openAddTeam()">ADD YOUR TEAM</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Stats -->
-    <section class="container">
-        <div class="stats">
-            <div class="stat-card">
-                <div class="stat-number">3 Min</div>
-                <div>Auto Delete</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">20</div>
-                <div>Active Teams Max</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">6+</div>
-                <div>Games Supported</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">30</div>
-                <div>Districts Covered</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Supported Games -->
-    <section class="container">
-        <h2 style="text-align: center; margin: 2rem 0 1rem 0; color: #dc2626;">SUPPORTED GAMES</h2>
-        <div class="games-grid">
-            <div class="game-card">BGMI</div>
-            <div class="game-card">FREE FIRE</div>
-            <div class="game-card">CODM</div>
-            <div class="game-card">CLASH OF CLANS</div>
-            <div class="game-card">INDUS ROYAL</div>
-            <div class="game-card">OTHER</div>
-        </div>
-    </section>
-
-    <!-- Team Code Section -->
-    <section class="container">
-        <div class="team-code-section">
-            <h2>QUICK CONNECT WITH TEAM CODE</h2>
-            <p>Already have a team code? Enter below to connect instantly</p>
-            <div class="code-input-group">
-                <input type="text" class="code-input" placeholder="Enter Team Code" id="teamCodeInput">
-                <button class="btn btn-primary" onclick="joinWithCode()">CONNECT NOW</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-links">
-                <a href="#" onclick="openTerms()">Terms & Conditions</a>
-                <a href="#" onclick="openPrivacy()">Privacy Policy</a>
-                <a href="#" onclick="openContact()">Contact</a>
-            </div>
-            <p>Odisha Gaming Connect - For Gamers, By Gamers</p>
-            <p>Age 16+ Only | Data Auto-Deleted in 3 Minutes</p>
-        </div>
-    </footer>
-
-    <!-- Find Player Modal -->
-    <div id="findPlayerModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeFindPlayer()">&times;</span>
-            <h2>FIND LOCAL PLAYERS</h2>
+            <button class="big-btn" onclick="showScreen('create-view')">
+                <span>➕</span> CREATE SQUAD
+            </button>
             
-            <div class="form-group">
-                <label>Select District</label>
-                <select id="searchDistrict">
-                    <option value="">Choose District</option>
-                    <option value="Angul">Angul</option>
-                    <option value="Balangir">Balangir</option>
-                    <option value="Balasore">Balasore</option>
-                    <option value="Bargarh">Bargarh</option>
-                    <option value="Bhadrak">Bhadrak</option>
-                    <option value="Boudh">Boudh</option>
-                    <option value="Cuttack">Cuttack</option>
-                    <option value="Debagarh">Debagarh</option>
-                    <option value="Dhenkanal">Dhenkanal</option>
-                    <option value="Gajapati">Gajapati</option>
-                    <option value="Ganjam">Ganjam</option>
-                    <option value="Jagatsinghapur">Jagatsinghapur</option>
-                    <option value="Jajpur">Jajpur</option>
-                    <option value="Jharsuguda">Jharsuguda</option>
-                    <option value="Kalahandi">Kalahandi</option>
-                    <option value="Kandhamal">Kandhamal</option>
-                    <option value="Kendrapara">Kendrapara</option>
-                    <option value="Kendujhar">Kendujhar</option>
-                    <option value="Khordha">Khordha</option>
-                    <option value="Koraput">Koraput</option>
-                    <option value="Malkangiri">Malkangiri</option>
-                    <option value="Mayurbhanj">Mayurbhanj</option>
-                    <option value="Nabarangpur">Nabarangpur</option>
-                    <option value="Nayagarh">Nayagarh</option>
-                    <option value="Nuapada">Nuapada</option>
-                    <option value="Puri">Puri</option>
-                    <option value="Rayagada">Rayagada</option>
-                    <option value="Sambalpur">Sambalpur</option>
-                    <option value="Subarnapur">Subarnapur</option>
-                    <option value="Sundargarh">Sundargarh</option>
-                </select>
-            </div>
+            <button class="big-btn" onclick="showScreen('find-view')">
+                <span>🔍</span> FIND SQUAD
+            </button>
 
-            <div class="form-group">
-                <label>City/Village</label>
-                <input type="text" id="searchCity" placeholder="Enter your city or village">
-            </div>
+            <p style="margin-top:50px; font-size:0.8rem; color:#444;">Odisha's Own Gaming Network</p>
+        </div>
 
-            <div class="form-group">
-                <label>Select Game</label>
-                <select id="searchGame">
-                    <option value="">Choose Game</option>
+        <div id="create-view" class="view animate">
+            <button class="back-btn" onclick="showScreen('home-view')">⬅ Back to Home</button>
+            <h2 style="color:#ff5e00">Host a Match</h2>
+
+            <div style="background:#111; padding:20px; border-radius:10px; border:1px solid #333;">
+                <label style="display:flex; align-items:center; gap:10px; margin-bottom:15px; color:#ccc;">
+                    <input type="checkbox" id="ageCheck" style="width:20px;"> I am 16+ years old
+                </label>
+
+                <select id="c_game">
+                    <option value="" disabled selected>Select Game</option>
                     <option value="BGMI">BGMI</option>
                     <option value="Free Fire">Free Fire</option>
                     <option value="CODM">CODM</option>
-                    <option value="Clash of Clans">Clash of Clans</option>
-                    <option value="Indus Royal">Indus Royal</option>
-                    <option value="Other">Other</option>
+                    <option value="Indus">Indus Royale</option>
                 </select>
-            </div>
 
-            <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" onclick="searchPlayers()">SEARCH PLAYERS</button>
-            <button class="btn btn-secondary" style="width: 100%;" onclick="randomMatch()">RANDOM MATCH</button>
+                <select id="c_district">
+                    <option value="" disabled selected>Select District</option>
+                    <option value="Angul">Angul</option>
+                    <option value="Balangir">Balangir(my city)</option>
+                    <option value="Balasore">Balasore</option>
+                    <option value="Bargarh">Bargarh</option>
+                    <option value="Bhadrak">Bhadrak</option>
+                    <option value="Cuttack">Cuttack</option>
+                    <option value="Ganjam">Ganjam</option>
+                    <option value="Jharsuguda">Jharsuguda</option>
+                    <option value="Kendrapara">Kendrapara</option>
+                    <option value="Kendujhar">Kendujhar</option>
+                    <option value="Khordha">Khordha</option>
+                    <option value="Koraput">Koraput</option>
+                    <option value="Puri">Puri</option>
+                    <option value="Sambalpur">Sambalpur</option>
+                    <option value="Sundargarh">Sundargarh</option>
+                    <option value="Rourkela">Rourkela (City)</option>
+                    <option value="Bhubaneswar">Bhubaneswar (City)</option>
+                </select>
 
-            <div id="searchResults" class="results-section">
-                <h3 style="color: #dc2626; margin: 1.5rem 0 1rem 0;">Active Players Found</h3>
-                <div id="resultsContainer"></div>
+                <input type="text" id="c_village" placeholder="Village / Area Name">
+                <input type="text" id="c_code" placeholder="Enter Team Code (e.g. 556677)">
+
+                <button class="action-btn" onclick="addTeam()">POST SQUAD</button>
             </div>
         </div>
-    </div>
 
-    <!-- Add Team Modal -->
-    <div id="addTeamModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeAddTeam()">&times;</span>
-            <h2>ADD YOUR TEAM</h2>
-            
-            <div class="data-limit-warning">
-                ⚠️ Maximum 20 Active Teams | Auto Delete in 3 Minutes
-            </div>
+        <div id="find-view" class="view animate">
+            <button class="back-btn" onclick="showScreen('home-view')">⬅ Back to Home</button>
+            <h2 style="color:#ff5e00">Find Matches</h2>
 
-            <div class="form-group">
-                <label>Team Name *</label>
-                <input type="text" id="teamName" placeholder="Enter your team name" required>
-            </div>
+            <div style="margin-bottom:20px;">
+                <p style="font-size:0.9rem; color:#aaa;">Select filters to find local players:</p>
+                <select id="f_game">
+                    <option value="All">All Games</option>
+                    <option value="BGMI">BGMI</option>
+                    <option value="Free Fire">Free Fire</option>
+                    <option value="CODM">CODM</option>
+                    <option value="Indus">Indus Royale</option>
+                </select>
 
-            <div class="form-group">
-                <label>Your Name *</label>
-                <input type="text" id="playerName" placeholder="Enter your name" required>
-            </div>
-
-            <div class="form-group">
-                <label>Phone Number *</label>
-                <input type="tel" id="playerPhone" placeholder="Enter your phone number" required>
-            </div>
-
-            <div class="form-group">
-                <label>Select District *</label>
-                <select id="teamDistrict" required>
-                    <option value="">Choose District</option>
+                <select id="f_district">
+                    <option value="" disabled selected>Select Your Location</option>
                     <option value="Angul">Angul</option>
                     <option value="Balangir">Balangir</option>
                     <option value="Balasore">Balasore</option>
                     <option value="Bargarh">Bargarh</option>
                     <option value="Bhadrak">Bhadrak</option>
-                    <option value="Boudh">Boudh</option>
                     <option value="Cuttack">Cuttack</option>
-                    <option value="Debagarh">Debagarh</option>
-                    <option value="Dhenkanal">Dhenkanal</option>
-                    <option value="Gajapati">Gajapati</option>
                     <option value="Ganjam">Ganjam</option>
-                    <option value="Jagatsinghapur">Jagatsinghapur</option>
-                    <option value="Jajpur">Jajpur</option>
                     <option value="Jharsuguda">Jharsuguda</option>
-                    <option value="Kalahandi">Kalahandi</option>
-                    <option value="Kandhamal">Kandhamal</option>
-                    <option value="Kendrapara">Kendrapara</option>
-                    <option value="Kendujhar">Kendujhar</option>
                     <option value="Khordha">Khordha</option>
-                    <option value="Koraput">Koraput</option>
-                    <option value="Malkangiri">Malkangiri</option>
-                    <option value="Mayurbhanj">Mayurbhanj</option>
-                    <option value="Nabarangpur">Nabarangpur</option>
-                    <option value="Nayagarh">Nayagarh</option>
-                    <option value="Nuapada">Nuapada</option>
                     <option value="Puri">Puri</option>
-                    <option value="Rayagada">Rayagada</option>
                     <option value="Sambalpur">Sambalpur</option>
-                    <option value="Subarnapur">Subarnapur</option>
                     <option value="Sundargarh">Sundargarh</option>
+                    <option value="Rourkela">Rourkela</option>
+                    <option value="Bhubaneswar">Bhubaneswar</option>
                 </select>
+
+                <button class="action-btn" onclick="searchSquads()">SEARCH NOW</button>
             </div>
 
-            <div class="form-group">
-                <label>City/Village *</label>
-                <input type="text" id="teamCity" placeholder="Enter your city or village" required>
-            </div>
-
-            <div class="form-group">
-                <label>Preferred Games *</label>
-                <div class="checkbox-group">
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="bgmi" value="BGMI">
-                        <label for="bgmi">BGMI</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="freefire" value="Free Fire">
-                        <label for="freefire">Free Fire</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="codm" value="CODM">
-                        <label for="codm">CODM</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="coc" value="Clash of Clans">
-                        <label for="coc">Clash of Clans</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="indus" value="Indus Royal">
-                        <label for="indus">Indus Royal</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="other" value="Other">
-                        <label for="other">Other</label>
-                    </div>
+            <div id="resultsArea">
                 </div>
-            </div>
-
-            <div class="form-group">
-                <label>Team Code *</label>
-                <input type="text" id="teamCode" placeholder="Create unique code (e.g., TEAM123)" required>
-                <small style="color: #94a3b8;">Share this code with others to connect</small>
-            </div>
-
-            <button class="btn btn-primary" style="width: 100%;" onclick="saveTeam()">ADD TEAM (3 Min Auto-Delete)</button>
         </div>
+
     </div>
 
-    <!-- Terms Modal -->
-    <div id="termsModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeTerms()">&times;</span>
-            <h2>TERMS & CONDITIONS</h2>
-            <div style="color: #94a3b8; line-height: 1.6; max-height: 400px; overflow-y: auto;">
-                <p><strong>Age Requirement:</strong> This platform is strictly for users aged 16 years and above.</p>
-                
-                <p><strong>Data Privacy:</strong> Your team information (name, phone, location) is visible to other users for matching purposes. Phone numbers are shared only with matched players.</p>
-                
-                <p><strong>Auto Deletion:</strong> All team data is automatically deleted after 3 minutes to ensure fresh connections and privacy protection.</p>
-                
-                <p><strong>User Conduct:</strong> Users must maintain respectful behavior. Any harassment, spam, or misuse will result in permanent ban.</p>
-                
-                <p><strong>Gaming Ethics:</strong> This platform supports fair gaming. Cheating, hacking, or any unfair practices are strictly prohibited.</p>
-                
-                <p><strong>Limitation:</strong> Maximum 20 active teams are maintained at any time for optimal performance.</p>
-                
-                <p><strong>Contact:</strong> Users connect directly via shared phone numbers. Exercise caution and verify identities before sharing personal information.</p>
-                
-                <p>By using this platform, you agree to these terms and confirm you are 16+ years old.</p>
-            </div>
-        </div>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-    <script>
-        // Firebase Configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDJC_jo2CoL4cbEeNpHtKL_5J8hqEr9A8k",
-            authDomain: "odisha--gamer.firebaseapp.com",
-            projectId: "odisha--gamer",
-            storageBucket: "odisha--gamer.firebasestorage.app",
-            messagingSenderId: "202711932754",
-            appId: "1:202711932754:web:89c9828d4328419a00a48b"
+          apiKey: "AIzaSyDJC_jo2CoL4cbEeNpHtKL_5J8hqEr9A8k",
+          authDomain: "odisha--gamer.firebaseapp.com",
+          projectId: "odisha--gamer",
+          storageBucket: "odisha--gamer.firebasestorage.app",
+          messagingSenderId: "202711932754",
+          appId: "1:202711932754:web:6e84c84bc12195fa00a48b",
+          measurementId: "G-W134J6415Y"
         };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
 
-        // Modal Functions
-        function openFindPlayer() {
-            document.getElementById('findPlayerModal').style.display = 'block';
-            document.getElementById('searchResults').style.display = 'none';
+        // --- NAVIGATION LOGIC ---
+        window.showScreen = function(screenId) {
+            // Saare screens chupao
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active-view'));
+            // Jo chahiye wo dikhao
+            document.getElementById(screenId).classList.add('active-view');
         }
 
-        function closeFindPlayer() {
-            document.getElementById('findPlayerModal').style.display = 'none';
-        }
+        // --- ADD TEAM LOGIC ---
+        window.addTeam = async function() {
+            const age = document.getElementById('ageCheck').checked;
+            const game = document.getElementById('c_game').value;
+            const district = document.getElementById('c_district').value;
+            const village = document.getElementById('c_village').value;
+            const code = document.getElementById('c_code').value;
 
-        function openAddTeam() {
-            document.getElementById('addTeamModal').style.display = 'block';
-        }
+            if(!age) { alert("Age 16+ is required!"); return; }
+            if(game=="" || district=="" || code=="") { alert("Please fill details"); return; }
 
-        function closeAddTeam() {
-            document.getElementById('addTeamModal').style.display = 'none';
-        }
-
-        function openTerms() {
-            document.getElementById('termsModal').style.display = 'block';
-        }
-
-        function closeTerms() {
-            document.getElementById('termsModal').style.display = 'none';
-        }
-
-        function openPrivacy() {
-            alert('Privacy Policy: We collect only necessary data for matching. All data auto-deletes in 3 minutes. Phone numbers are shared only with matched players.');
-        }
-
-        function openContact() {
-            alert('Contact: Use the platform to connect with players. For technical issues, please check the terms and conditions.');
-        }
-
-        // Save Team to Firebase
-        async function saveTeam() {
-            const teamName = document.getElementById('teamName').value;
-            const playerName = document.getElementById('playerName').value;
-            const playerPhone = document.getElementById('playerPhone').value;
-            const teamDistrict = document.getElementById('teamDistrict').value;
-            const teamCity = document.getElementById('teamCity').value;
-            const teamCode = document.getElementById('teamCode').value;
-            
-            // Get selected games
-            const games = [];
-            if (document.getElementById('bgmi').checked) games.push('BGMI');
-            if (document.getElementById('freefire').checked) games.push('Free Fire');
-            if (document.getElementById('codm').checked) games.push('CODM');
-            if (document.getElementById('coc').checked) games.push('Clash of Clans');
-            if (document.getElementById('indus').checked) games.push('Indus Royal');
-            if (document.getElementById('other').checked) games.push('Other');
-            
-            // Validation
-            if (!teamName || !playerName || !playerPhone || !teamDistrict || !teamCity || !teamCode || games.length === 0) {
-                alert('Please fill all required fields!');
-                return;
-            }
-
-            // Check data limit (20 teams max)
-            try {
-                const now = new Date();
-                const teamsCount = await db.collection('teams')
-                    .where('expiresAt', '>', now)
-                    .get();
-                
-                if (teamsCount.size >= 20) {
-                    alert('Maximum 20 active teams reached! Please try again in a few minutes.');
-                    return;
-                }
-            } catch (error) {
-                console.error('Error checking team count:', error);
-            }
-
-            // Create team object with 3 minute expiry
-            const teamData = {
-                teamName,
-                playerName,
-                playerPhone,
-                district: teamDistrict,
-                city: teamCity,
-                games,
-                teamCode,
-                createdAt: new Date(),
-                expiresAt: new Date(Date.now() + 3 * 60 * 1000) // 3 minutes
-            };
+            const btn = document.querySelector("#create-view .action-btn");
+            btn.innerText = "Processing...";
 
             try {
-                await db.collection('teams').add(teamData);
-                
-                alert(`✅ Team "${teamName}" added!\n\nYour team will be visible for 3 minutes.\nTeam Code: ${teamCode}\nShare this code with others!`);
-                
-                // Reset form
-                document.getElementById('teamName').value = '';
-                document.getElementById('playerName').value = '';
-                document.getElementById('playerPhone').value = '';
-                document.getElementById('teamDistrict').value = '';
-                document.getElementById('teamCity').value = '';
-                document.getElementById('teamCode').value = '';
-                document.getElementById('bgmi').checked = false;
-                document.getElementById('freefire').checked = false;
-                document.getElementById('codm').checked = false;
-                document.getElementById('coc').checked = false;
-                document.getElementById('indus').checked = false;
-                document.getElementById('other').checked = false;
-                
-                closeAddTeam();
-            } catch (error) {
-                alert('Error saving team: ' + error.message);
-            }
-        }
-
-        // Search Players from Firebase
-        async function searchPlayers() {
-            const district = document.getElementById('searchDistrict').value;
-            const city = document.getElementById('searchCity').value.toLowerCase();
-            const game = document.getElementById('searchGame').value;
-            
-            if (!district || !game) {
-                alert('Please select district and game!');
-                return;
-            }
-            
-            try {
-                const now = new Date();
-                const teamsRef = db.collection('teams');
-                const snapshot = await teamsRef
-                    .where('district', '==', district)
-                    .where('games', 'array-contains', game)
-                    .where('expiresAt', '>', now)
-                    .get();
-
-                let results = [];
-                snapshot.forEach(doc => {
-                    const team = doc.data();
-                    team.id = doc.id;
-                    results.push(team);
+                await addDoc(collection(db, "rooms"), {
+                    game: game,
+                    district: district,
+                    village: village,
+                    code: code,
+                    timestamp: Date.now()
                 });
-
-                // Filter by city if provided
-                if (city) {
-                    results = results.filter(team => 
-                        team.city.toLowerCase().includes(city)
-                    );
-                }
-
-                displayResults(results, district, game, city);
-            } catch (error) {
-                console.error('Error searching teams:', error);
-                alert('Error searching players. Please try again.');
+                alert("✅ Squad Created Successfully!");
+                window.showScreen('home-view'); // Wapas home bhejo
+                btn.innerText = "POST SQUAD";
+                // Clear form
+                document.getElementById('c_code').value = "";
+            } catch(e) {
+                alert("Error. Check internet.");
+                btn.innerText = "POST SQUAD";
             }
         }
 
-        // Display Search Results
-        function displayResults(results, district, game, city) {
-            const resultsContainer = document.getElementById('resultsContainer');
-            const resultsSection = document.getElementById('searchResults');
+        // --- SEARCH LOGIC (Only shows when search clicked) ---
+        let unsubscribe = null; // To stop listening when not needed
+
+        window.searchSquads = function() {
+            const searchGame = document.getElementById('f_game').value;
+            const searchLoc = document.getElementById('f_district').value;
+            const resultsDiv = document.getElementById('resultsArea');
+
+            if(searchLoc == "") {
+                resultsDiv.innerHTML = "<p style='color:red'>⚠️ Please select a District first.</p>";
+                return;
+            }
+
+            resultsDiv.innerHTML = "<p style='color:#ff5e00'>Searching live squads...</p>";
+
+            // Firebase Listener
+            const q = query(collection(db, "rooms"), orderBy("timestamp", "desc"));
             
-            if (results.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="result-card">
-                        <h4>No Active Players</h4>
-                        <p>No players found in ${district}${city ? `, ${city}` : ''} for ${game}.</p>
-                        <p>Try changing search or add your own team!</p>
-                    </div>
-                `;
-            } else {
-                let resultsHTML = '';
-                results.forEach(team => {
-                    const timeLeft = Math.round((new Date(team.expiresAt) - new Date()) / 60000);
-                    resultsHTML += `
-                        <div class="result-card">
-                            <h4>${team.teamName}</h4>
-                            <div style="color: #94a3b8; margin-bottom: 0.5rem;">
-                                <strong>Player:</strong> ${team.playerName}<br>
-                                <strong>Location:</strong> ${team.city}, ${team.district}<br>
-                                <strong>Games:</strong> ${team.games.join(', ')}<br>
-                                <strong>Contact:</strong> ${team.playerPhone}
-                            </div>
-                            <div>
-                                <strong>Team Code:</strong> <span class="team-code">${team.teamCode}</span>
-                                <div class="time-left">Expires in: ${timeLeft} minutes</div>
-                            </div>
+            // Purana listener band karo agar hai toh
+            if(unsubscribe) unsubscribe();
+
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                resultsDiv.innerHTML = "";
+                let count = 0;
+
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const now = Date.now();
+                    const minutesAgo = (now - data.timestamp) / 1000 / 60;
+
+                    // 1. Time Check (5 Min Auto Delete Logic)
+                    if(minutesAgo > 5) return;
+
+                    // 2. Location Filter (Strict)
+                    if(data.district !== searchLoc) return;
+
+                    // 3. Game Filter (Optional)
+                    if(searchGame !== "All" && data.game !== searchGame) return;
+
+                    count++;
+                    const div = document.createElement("div");
+                    div.className = "room-item";
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="game-title">${data.game}</span>
+                            <span style="font-size:0.8rem; color:#666">${Math.floor(minutesAgo)}m ago</span>
                         </div>
+                        <div class="details">📍 ${data.district}, ${data.village}</div>
+                        <div class="copy-code">${data.code}</div>
                     `;
-                });
-                resultsContainer.innerHTML = resultsHTML;
-            }
-            
-            resultsSection.style.display = 'block';
-        }
-
-        // Random Match
-        async function randomMatch() {
-            const district = document.getElementById('searchDistrict').value;
-            const game = document.getElementById('searchGame').value;
-            
-            if (!district || !game) {
-                alert('Please select district and game first!');
-                return;
-            }
-            
-            try {
-                const now = new Date();
-                const teamsRef = db.collection('teams');
-                const snapshot = await teamsRef
-                    .where('district', '==', district)
-                    .where('games', 'array-contains', game)
-                    .where('expiresAt', '>', now)
-                    .get();
-
-                let results = [];
-                snapshot.forEach(doc => {
-                    const team = doc.data();
-                    team.id = doc.id;
-                    results.push(team);
+                    resultsDiv.appendChild(div);
                 });
 
-                if (results.length === 0) {
-                    alert('No active players in your area. Try expanding your search!');
-                    return;
+                if(count === 0) {
+                    resultsDiv.innerHTML = `
+                        <div style="margin-top:20px; color:#666;">
+                            No active squads in <b>${searchLoc}</b> right now.<br>
+                            Try creating one?
+                        </div>`;
                 }
-
-                const randomTeam = results[Math.floor(Math.random() * results.length)];
-                const timeLeft = Math.round((new Date(randomTeam.expiresAt) - new Date()) / 60000);
-
-                const resultsContainer = document.getElementById('resultsContainer');
-                const resultsSection = document.getElementById('searchResults');
-                
-                resultsContainer.innerHTML = `
-                    <div class="result-card">
-                        <h3>🎯 Random Match Found!</h3>
-                        <h4>${randomTeam.teamName}</h4>
-                        <div style="color: #94a3b8; margin-bottom: 0.5rem;">
-                            <strong>Player:</strong> ${randomTeam.playerName}<br>
-                            <strong>Location:</strong> ${randomTeam.city}, ${randomTeam.district}<br>
-                            <strong>Games:</strong> ${randomTeam.games.join(', ')}<br>
-                            <strong>Contact:</strong> ${randomTeam.playerPhone}
-                        </div>
-                        <div>
-                            <strong>Team Code:</strong> <span class="team-code">${randomTeam.teamCode}</span>
-                            <div class="time-left">Expires in: ${timeLeft} minutes</div>
-                        </div>
-                    </div>
-                `;
-                
-                resultsSection.style.display = 'block';
-            } catch (error) {
-                console.error('Error in random match:', error);
-                alert('Error finding random match. Please try again.');
-            }
-        }
-
-        // Join with Team Code
-        async function joinWithCode() {
-            const code = document.getElementById('teamCodeInput').value.trim();
-            if (!code) {
-                alert('Please enter a team code!');
-                return;
-            }
-            
-            try {
-                const now = new Date();
-                const teamsRef = db.collection('teams');
-                const snapshot = await teamsRef
-                    .where('teamCode', '==', code)
-                    .where('expiresAt', '>', now)
-                    .get();
-
-                if (snapshot.empty) {
-                    alert('Team code not found or expired! Please check the code and try again.');
-                    return;
-                }
-
-                let team;
-                snapshot.forEach(doc => {
-                    team = doc.data();
-                });
-
-                const timeLeft = Math.round((new Date(team.expiresAt) - new Date()) / 60000);
-                alert(`✅ Team Found!\n\nTeam: ${team.teamName}\nPlayer: ${team.playerName}\nLocation: ${team.city}, ${team.district}\nGames: ${team.games.join(', ')}\nContact: ${team.playerPhone}\nTeam Code: ${team.teamCode}\n\nExpires in: ${timeLeft} minutes\n\nConnect with them using the contact information above.`);
-            } catch (error) {
-                console.error('Error finding team:', error);
-                alert('Error finding team. Please try again.');
-            }
-        }
-
-        // Close modals when clicking outside
-        window.onclick = function(event) {
-            const findModal = document.getElementById('findPlayerModal');
-            const addModal = document.getElementById('addTeamModal');
-            const termsModal = document.getElementById('termsModal');
-            
-            if (event.target === findModal) findModal.style.display = 'none';
-            if (event.target === addModal) addModal.style.display = 'none';
-            if (event.target === termsModal) termsModal.style.display = 'none';
+            });
         }
     </script>
 </body>
 </html>
-```
