@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Near2Squad - Odisha</title>
+    <style>
+        /* --- PRO STYLING & ANIMATIONS --- */
+        body {
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            overflow-x: hidden;
+        }
+        /* Animation: Fade In Effect */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Animation: Leaderboard Pop */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            70% { transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .animate {
+            animation: fadeIn 0.8s ease-out;
+        }
+        h1 {
+            color: #ff5e00;
+            text-shadow: 0 0 15px #ff5e00;
+            margin-top: 30px;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        /* --- BUTTONS --- */
+        .big-btn {
+            background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+            border: 2px solid #ff5e00;
+            color: white;
+            padding: 25px;
+            margin: 10px 0;
+            border-radius: 15px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 0 10px rgba(255, 94, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .big-btn:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 25px rgba(255, 94, 0, 0.6);
+            background: #ff5e00;
+            color: black;
+        }
+        .quick-btn {
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 15px;
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 10px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .action-btn {
+            background-color: #ff5e00;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        .back-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #aaa;
+            padding: 8px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 0.9rem;
+        }
+        /* --- INPUTS --- */
+        input, select {
+            width: 90%;
+            padding: 14px;
+            margin: 10px 0;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #ff5e00;
+        }
+        /* --- VIEWS (Screens) --- */
+        .view {
+            display: none;
+        }
+        
+        .active-view {
+            display: block;
+        }
+        /* --- RESULTS CARD --- */
+        .room-item {
+            background: #111;
+            border-right: 4px solid #ff5e00;
+            border-radius: 8px;
+            margin: 10px 0;
+            padding: 15px;
+            text-align: left;
+            animation: fadeIn 0.5s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .game-title { color: #ff5e00; font-weight: bold; font-size: 1.1rem; }
+        .details { color: #ccc; font-size: 0.9rem; margin: 5px 0; }
+        
+        .code-block {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .copy-box {
+            background: #222;
+            color: #fff;
+            padding: 8px;
+            flex: 1;
+            text-align: center;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 1.1rem;
+            border: 1px dashed #555;
+        }
+        .label {
+            font-size: 0.7rem;
+            color: #888;
+            display: block;
+            margin-bottom: 2px;
+        }
+        /* --- LEADERBOARD STYLES --- */
+        .leaderboard-container {
+            margin-top: 30px;
+            background: #0f0f0f;
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #222;
+        }
+        .lb-title {
+            color: #fff;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 5px;
+        }
+        .lb-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            background: #181818;
+            animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            opacity: 0; /* Initially hidden for animation */
+        }
+        .lb-rank { font-weight: bold; margin-right: 10px; font-size: 1.2rem; }
+        .lb-name { flex: 1; text-align: left; font-weight: 500; }
+        .lb-count { background: #333; padding: 2px 8px; border-radius: 4px; font-size: 0.9rem; }
+        /* Rank Colors */
+        .rank-1 { border: 1px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); animation-delay: 0.2s; }
+        .rank-2 { border: 1px solid #C0C0C0; animation-delay: 0.4s; }
+        .rank-3 { border: 1px solid #CD7F32; animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>near2squad <span style="font-size:12px; vertical-align:middle; background:#ff5e00; color:black; padding:2px 5px; border-radius:4px;">BETA</span></h1>
+        <!-- HOME VIEW -->
+        <div id="home-view" class="view active-view animate">
+            <p style="color:#aaa; margin-bottom: 20px;">Odisha's Gaming Network</p>
+            
+            <button class="big-btn" onclick="showScreen('create-view')">
+                <span>➕</span> CREATE SQUAD
+            </button>
+            
+            <button class="big-btn" onclick="showScreen('find-view')">
+                <span>🔍</span> FIND SQUAD
+            </button>
+            <button class="quick-btn" onclick="quickSearch()">
+                ⚡ QUICK SEARCH (Latest)
+            </button>
+            <!-- LEADERBOARD SECTION -->
+            <div class="leaderboard-container">
+                <div class="lb-title">🔥 Top Active Districts (24h)</div>
+                <div id="leaderboard-list">
+                    <p style="font-size:0.8rem; color:#444;">Loading stats...</p>
+                </div>
+            </div>
+            <p style="margin-top:30px; font-size:0.8rem; color:#444;">Supports: BGMI, FreeFire, CODM, Indus</p>
+        </div>
+        <!-- CREATE VIEW -->
+        <div id="create-view" class="view animate">
+            <button class="back-btn" onclick="showScreen('home-view')">⬅ Back to Home</button>
+            <h2 style="color:#ff5e00">Host a Match</h2>
+            <div style="background:#111; padding:20px; border-radius:10px; border:1px solid #333;">
+                <label style="display:flex; align-items:center; gap:10px; margin-bottom:15px; color:#ccc;">
+                    <input type="checkbox" id="ageCheck" style="width:20px;"> I am 16+ years old
+                </label>
+                <select id="c_game">
+                    <option value="" disabled selected>Select Game</option>
+                    <option value="BGMI">BGMI</option>
+                    <option value="Free Fire">Free Fire</option>
+                    <option value="CODM">CODM</option>
+                    <option value="Indus">Indus Royale</option>
+                </select>
+                <!-- Full 30 Districts List -->
+                <select id="c_district">
+                    <option value="" disabled selected>Select District</option>
+                    <option value="Angul">Angul</option>
+                    <option value="Balangir">Balangir</option>
+                    <option value="Balasore">Balasore</option>
+                    <option value="Bargarh">Bargarh</option>
+                    <option value="Bhadrak">Bhadrak</option>
+                    <option value="Boudh">Boudh</option>
+                    <option value="Cuttack">Cuttack</option>
+                    <option value="Deogarh">Deogarh</option>
+                    <option value="Dhenkanal">Dhenkanal</option>
+                    <option value="Gajapati">Gajapati</option>
+                    <option value="Ganjam">Ganjam</option>
+                    <option value="Jagatsinghpur">Jagatsinghpur</option>
+                    <option value="Jajpur">Jajpur</option>
+                    <option value="Jharsuguda">Jharsuguda</option>
+                    <option value="Kalahandi">Kalahandi</option>
+                    <option value="Kandhamal">Kandhamal</option>
+                    <option value="Kendrapara">Kendrapara</option>
+                    <option value="Kendujhar">Kendujhar</option>
+                    <option value="Khordha">Khordha</option>
+                    <option value="Koraput">Koraput</option>
+                    <option value="Malkangiri">Malkangiri</option>
+                    <option value="Mayurbhanj">Mayurbhanj</option>
+                    <option value="Nabarangpur">Nabarangpur</option>
+                    <option value="Nayagarh">Nayagarh</option>
+                    <option value="Nuapada">Nuapada</option>
+                    <option value="Puri">Puri</option>
+                    <option value="Rayagada">Rayagada</option>
+                    <option value="Sambalpur">Sambalpur</option>
+                    <option value="Subarnapur">Subarnapur</option>
+                    <option value="Sundargarh">Sundargarh</option>
+                    <!-- Cities -->
+                    <option value="Rourkela">Rourkela (City)</option>
+                    <option value="Bhubaneswar">Bhubaneswar (City)</option>
+                </select>
+                <input type="text" id="c_village" placeholder="Village / Area Name">
+                
+                <div style="display:flex; gap:10px;">
+                    <input type="text" id="c_code" placeholder="Team Code" style="flex:1">
+                    <input type="text" id="c_password" placeholder="Password" style="flex:1">
+                </div>
+                <button class="action-btn" onclick="addTeam()">POST SQUAD</button>
+            </div>
+        </div>
+        <!-- FIND VIEW -->
+        <div id="find-view" class="view animate">
+            <button class="back-btn" onclick="showScreen('home-view')">⬅ Back to Home</button>
+            <h2 style="color:#ff5e00">Find Matches</h2>
+            <div style="margin-bottom:20px;">
+                <p style="font-size:0.9rem; color:#aaa;">Matches expire after 24 hours.</p>
+                
+                <select id="f_game" onchange="searchSquads()">
+                    <option value="All">All Games</option>
+                    <option value="BGMI">BGMI</option>
+                    <option value="Free Fire">Free Fire</option>
+                    <option value="CODM">CODM</option>
+                    <option value="Indus">Indus Royale</option>
+                </select>
+                <select id="f_district" onchange="searchSquads()">
+                    <option value="" disabled selected>Select Your Location</option>
+                    <option value="Angul">Angul</option>
+                    <option value="Balangir">Balangir</option>
+                    <option value="Balasore">Balasore</option>
+                    <option value="Bargarh">Bargarh</option>
+                    <option value="Bhadrak">Bhadrak</option>
+                    <option value="Boudh">Boudh</option>
+                    <option value="Cuttack">Cuttack</option>
+                    <option value="Deogarh">Deogarh</option>
+                    <option value="Dhenkanal">Dhenkanal</option>
+                    <option value="Gajapati">Gajapati</option>
+                    <option value="Ganjam">Ganjam</option>
+                    <option value="Jagatsinghpur">Jagatsinghpur</option>
+                    <option value="Jajpur">Jajpur</option>
+                    <option value="Jharsuguda">Jharsuguda</option>
+                    <option value="Kalahandi">Kalahandi</option>
+                    <option value="Kandhamal">Kandhamal</option>
+                    <option value="Kendrapara">Kendrapara</option>
+                    <option value="Kendujhar">Kendujhar</option>
+                    <option value="Khordha">Khordha</option>
+                    <option value="Koraput">Koraput</option>
+                    <option value="Malkangiri">Malkangiri</option>
+                    <option value="Mayurbhanj">Mayurbhanj</option>
+                    <option value="Nabarangpur">Nabarangpur</option>
+                    <option value="Nayagarh">Nayagarh</option>
+                    <option value="Nuapada">Nuapada</option>
+                    <option value="Puri">Puri</option>
+                    <option value="Rayagada">Rayagada</option>
+                    <option value="Sambalpur">Sambalpur</option>
+                    <option value="Subarnapur">Subarnapur</option>
+                    <option value="Sundargarh">Sundargarh</option>
+                    <!-- Cities -->
+                    <option value="Rourkela">Rourkela</option>
+                    <option value="Bhubaneswar">Bhubaneswar</option>
+                </select>
+                <button class="action-btn" onclick="searchSquads()">REFRESH / SEARCH</button>
+            </div>
+            <div id="resultsArea">
+                <p style="color:#444; font-size:0.9rem;">Select a District to see passwords.</p>
+            </div>
+        </div>
+    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        const firebaseConfig = {
+          apiKey: "AIzaSyDJC_jo2CoL4cbEeNpHtKL_5J8hqEr9A8k",
+          authDomain: "odisha--gamer.firebaseapp.com",
+          projectId: "odisha--gamer",
+          storageBucket: "odisha--gamer.firebasestorage.app",
+          messagingSenderId: "202711932754",
+          appId: "1:202711932754:web:6e84c84bc12195fa00a48b",
+          measurementId: "G-W134J6415Y"
+        };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        // --- GLOBAL LISTENERS ---
+        // Load Leaderboard immediately
+        loadLeaderboard();
+        // --- NAVIGATION LOGIC ---
+        window.showScreen = function(screenId) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active-view'));
+            document.getElementById(screenId).classList.add('active-view');
+        }
+        window.quickSearch = function() {
+            showScreen('find-view');
+            document.getElementById('resultsArea').innerHTML = "<p style='color:#ff5e00'>👇 Select District to see matches...</p>";
+        }
+        // --- LEADERBOARD LOGIC ---
+        function loadLeaderboard() {
+            const lbList = document.getElementById('leaderboard-list');
+            const q = query(collection(db, "rooms"), orderBy("timestamp", "desc"));
+            
+            // Realtime Updates for Leaderboard
+            onSnapshot(q, (snapshot) => {
+                const districtCounts = {};
+                const now = Date.now();
+                const oneDay = 24 * 60 * 60 * 1000;
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    // Only count if within 24 hours
+                    if ((now - data.timestamp) < oneDay) {
+                        if (data.district) {
+                            districtCounts[data.district] = (districtCounts[data.district] || 0) + 1;
+                        }
+                    }
+                });
+                // Sort districts by count (highest first)
+                const sortedDistricts = Object.entries(districtCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 3); // Get Top 3
+                // Render
+                lbList.innerHTML = "";
+                if(sortedDistricts.length === 0) {
+                    lbList.innerHTML = "<p style='color:#666; font-size:0.8rem;'>No active squads yet.</p>";
+                    return;
+                }
+                sortedDistricts.forEach((item, index) => {
+                    const rank = index + 1;
+                    const districtName = item[0];
+                    const count = item[1];
+                    
+                    let medal = "";
+                    let rankClass = "";
+                    if(rank === 1) { medal = "🥇"; rankClass = "rank-1"; }
+                    if(rank === 2) { medal = "🥈"; rankClass = "rank-2"; }
+                    if(rank === 3) { medal = "🥉"; rankClass = "rank-3"; }
+                    const div = document.createElement('div');
+                    div.className = `lb-item ${rankClass}`;
+                    div.innerHTML = `
+                        <div class="lb-rank">${medal}</div>
+                        <div class="lb-name">${districtName}</div>
+                        <div class="lb-count">${count} squads</div>
+                    `;
+                    lbList.appendChild(div);
+                });
+            });
+        }
+        // --- ADD TEAM LOGIC ---
+        window.addTeam = async function() {
+            const age = document.getElementById('ageCheck').checked;
+            const game = document.getElementById('c_game').value;
+            const district = document.getElementById('c_district').value;
+            const village = document.getElementById('c_village').value;
+            const code = document.getElementById('c_code').value;
+            const password = document.getElementById('c_password').value;
+            if(!age) { alert("Age 16+ is required!"); return; }
+            if(game=="" || district=="" || code=="" || password=="") { 
+                alert("Please fill Game, District, Code and Password"); 
+                return; 
+            }
+            const btn = document.querySelector("#create-view .action-btn");
+            btn.innerText = "Processing...";
+            try {
+                await addDoc(collection(db, "rooms"), {
+                    game: game,
+                    district: district,
+                    village: village,
+                    code: code,
+                    password: password,
+                    timestamp: Date.now()
+                });
+                alert("✅ Squad Created Successfully!");
+                window.showScreen('home-view'); 
+                btn.innerText = "POST SQUAD";
+                document.getElementById('c_code').value = "";
+                document.getElementById('c_password').value = "";
+            } catch(e) {
+                console.error(e);
+                alert("Error. Check internet.");
+                btn.innerText = "POST SQUAD";
+            }
+        }
+        // --- SEARCH LOGIC ---
+        let unsubscribe = null;
+        window.searchSquads = function() {
+            const searchGame = document.getElementById('f_game').value;
+            const searchLoc = document.getElementById('f_district').value;
+            const resultsDiv = document.getElementById('resultsArea');
+            if(searchLoc == "") {
+                return; 
+            }
+            resultsDiv.innerHTML = "<p style='color:#ff5e00'>Searching live squads...</p>";
+            const q = query(collection(db, "rooms"), orderBy("timestamp", "desc"));
+            
+            if(unsubscribe) unsubscribe();
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                resultsDiv.innerHTML = "";
+                let count = 0;
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const now = Date.now();
+                    const hoursAgo = (now - data.timestamp) / (1000 * 60 * 60);
+                    // 1. Time Check (24 Hours Auto Delete Logic)
+                    if(hoursAgo > 24) return;
+                    // 2. Location Filter
+                    if(data.district !== searchLoc) return;
+                    // 3. Game Filter
+                    if(searchGame !== "All" && data.game !== searchGame) return;
+                    count++;
+                    const div = document.createElement("div");
+                    div.className = "room-item";
+                    
+                    // Formatting Time Label
+                    let timeLabel = "";
+                    if(hoursAgo < 1) {
+                        timeLabel = Math.floor(hoursAgo * 60) + "m ago";
+                    } else {
+                        timeLabel = Math.floor(hoursAgo) + "h ago";
+                    }
+                    div.innerHTML = `
+                        <div style="display:flex; justify-content:space-between;">
+                            <span class="game-title">${data.game}</span>
+                            <span style="font-size:0.8rem; color:#666">${timeLabel}</span>
+                        </div>
+                        <div class="details">📍 ${data.district}, ${data.village}</div>
+                        
+                        <div class="code-block">
+                            <div class="copy-box">
+                                <span class="label">TEAM CODE</span>
+                                ${data.code}
+                            </div>
+                            <div class="copy-box" style="border-color:#ff5e00; color:#ff5e00;">
+                                <span class="label">PASS</span>
+                                ${data.password}
+                            </div>
+                        </div>
+                    `;
+                    resultsDiv.appendChild(div);
+                });
+                if(count === 0) {
+                    resultsDiv.innerHTML = `
+                        <div style="margin-top:20px; color:#666;">
+                            No active squads in <b>${searchLoc}</b>.<br>
+                            Be the first to create one!
+                        </div>`;
+                }
+            });
+        }
+    </script>
+</body>
+</html>
